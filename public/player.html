@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+  <h2>Live Stream Player</h2>
+  <video id="video" controls autoplay muted style="width:100%;"></video>
+  <script>
+    var video = document.getElementById('video');
+    var videoSrc = 'hls/stream.m3u8';
+
+    if (Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+    }
+  </script>
+</body>
+</html>
