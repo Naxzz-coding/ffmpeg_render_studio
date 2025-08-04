@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Studio MP4 Stream</title>
+</head>
+<body>
+  <h2>Studio - Upload MP4 & Stream</h2>
+  <input type="file" accept="video/mp4" id="videoFile" />
+  <video id="preview" controls autoplay muted playsinline></video>
+  <button onclick="startStream()">Start Streaming</button>
+
+  <script>
+    let mediaStream;
+    let recorder;
+    let ws;
+
+    document.getElementById('videoFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      const video = document.getElementById('preview');
+      video.src = url;
+      video.play();
+      mediaStream = video.captureStream();
+    });
+
+    function startStream() {
+      ws = new WebSocket(location.origin.replace(/^http/, 'ws'));
+      recorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm; codecs=vp8' });
+
+      recorder.ondataavailable = function(e) {
+        if (e.data.size > 0 && ws.readyState === 1) {
+          ws.send(e.data);
+        }
+      };
+
+      recorder.start(1000);
+    }
+  </script>
+</body>
+  </html>
